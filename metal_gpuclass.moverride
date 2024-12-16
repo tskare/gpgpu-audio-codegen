@@ -1,0 +1,85 @@
+#import <Foundation/Foundation.h>
+#import <QuartzCore/QuartzCore.h>
+
+#import "__gpuagen.tok.NAME_metal.h"
+#import "globals.h"
+
+// Generated
+// You can freely edit this code. A first suggested edit is replacing this code with your own class comment!
+// Edits inside <GPUAGEN>-style tags will be removed on rerunning the tool; this allows resizing buffers.
+// The MacOS/Metal platform is in development and in particular currently depends on the GPUAudioBenchmark framework
+// in a sibling repository. This may be integrated into this repository in the future.
+@implementation
+__gpuagen.tok.NAME
+{
+__gpuagen.tok.metal.BUFFER_HEADER
+
+// Your data members here.
+}
+- (instancetype) initWithDevice: (id<MTLDevice>) device
+{
+    self = [super initWithDevice:device];
+    return self;
+}
+- (NSString*) getKernelName {
+    return @"BenchmarkRndMem";
+}
+- (void) setup {
+// Init buffers defined in YAML.
+__gpuagen.tok.metal.BUFFER_INIT
+
+// Your setup here.
+
+}
+- (void)encode__gpuagen.tok.NAMECommand:(id<MTLComputeCommandEncoder>)computeEncoder {
+    [computeEncoder setComputePipelineState:_mFunctionPSO];
+    // Set your buffers here.
+    // This can be assisted with macros, or with the following sample code:
+    // [computeEncoder setBuffer:_mbuffer1 offset:0 atIndex:0];
+    // [computeEncoder setBuffer:_mbuffer2 offset:0 atIndex:1];
+    // [computeEncoder setBuffer:_mbuffer3 offset:0 atIndex:2];
+    // unsigned int gridX = nTracks;
+    // MTLSize gridSize = MTLSizeMake(gridX, 1, 1);
+    // NSUInteger threadGroupSize = _mFunctionPSO.maxTotalThreadsPerThreadgroup;
+    // MTLSize threadgroupSize = MTLSizeMake(threadGroupSize, 1, 1);
+    // [computeEncoder dispatchThreads:gridSize threadsPerThreadgroup:threadgroupSize];
+}
+- (void) runBenchmark:
+        (NSMutableArray*) latencies {
+    // As mentioned above, this uses the GPUAudioBenchmark framework as a parent class.
+    // If you're not using this, you may wish to remove this function.
+    // Rerunning the tool on this input will not remove this function.
+    CFTimeInterval startTime = CACurrentMediaTime();
+
+    float *ph = _inputPlayheads.contents;
+    for (int i=0; i<nTracks; i++) {
+        ph[i] = playheads[i];
+    }
+
+    id<MTLCommandBuffer> commandBuffer = [_mCommandQueue commandBuffer];
+    assert(commandBuffer != nil);
+    id<MTLComputeCommandEncoder> computeEncoder = [commandBuffer computeCommandEncoder];
+    assert(computeEncoder != nil);
+    [self encode__gpuagen.tok.NAMEcommand:computeEncoder];
+    [computeEncoder endEncoding];
+    [commandBuffer commit];
+
+    [commandBuffer waitUntilCompleted];
+
+    // Update playheads; this is still in the measured time.
+    for (int i=0; i<nTracks; i++) {
+        ph[i] = playheads[i] + flagBufferSize;
+        // Cleanup: Wrap inside of kernel as well. Currently we may read past the end,
+        // but this is guaranteed to be in the buffer.
+        // Loops are of different sizes so we'll get the desired unaligned access test pattern.
+        if (ph[i]>playheadEnds[i]) {
+            ph[i] = playheadStarts[i] + (ph[i] - playheadEnds[i]);
+        }
+    }
+
+    CFTimeInterval endTime = CACurrentMediaTime();
+    // NSLog(@"Total Runtime: %g ms", 1000*(endTime - startTime));
+    NSNumber* latency = [NSNumber numberWithFloat:(1000*(endTime-startTime))];
+    [latencies addObject:latency];
+}
+@end

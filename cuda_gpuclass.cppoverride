@@ -1,0 +1,14 @@
+#include "__gpuagen.tok.NAME.cuh"
+
+#include <cuda_runtime.h>
+#include <stdio.h>
+#include <cuda_runtime.h>
+#include <helper_cuda.h>
+
+void
+__gpuagen.tok.NAME
+::InitDefaultBuffers(
+    cudaError_t err = cudaSuccess;
+
+__gpuagen.tok.BUFFER_INIT
+}

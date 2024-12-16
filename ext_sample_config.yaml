@@ -1,0 +1,20 @@
+parameters:
+  classname: "GPUA_Codegen_Sample"
+  samplerate: 48000
+buffers:
+  - name: "buffer1"
+    size: 1024
+    location: "host"
+  - name: "buffer2"
+    size: 2*FS
+    location: "device"
+    task: "input"
+  - name: "buffer3"
+    size: 512
+    location: "shared"
+  - name: "buffer4"
+    size: 4096
+    location: "hybrid"
+    parameters:
+      codegen:
+        init: true
