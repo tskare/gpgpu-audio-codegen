@@ -20,7 +20,7 @@ import (
 //go:embed cuda_gpuclass.h
 var embedfs embed.FS
 
-const VERSION = "0.1.0"
+const VERSION = "0.1.1"
 
 type Buffer struct {
 	Name       string `yaml:"name"`

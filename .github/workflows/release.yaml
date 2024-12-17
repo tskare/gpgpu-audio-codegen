@@ -31,5 +31,5 @@ jobs:
         goarch: ${{ matrix.goarch }}
         goversion: "https://dl.google.com/go/go1.23.4.linux-amd64.tar.gz"
         # project_path: "./path/to/binary"
-        binary_name: "test-binary"
+        binary_name: "gpgpu-audio-codegen"
         extra_files: LICENSE README.md
