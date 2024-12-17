@@ -74,8 +74,8 @@ buffers:
 		t.Fatalf("YAML parse error: %+v", err)
 	}
 
-	if config.Name != "" {
-		t.Errorf("Expected empty name, got %s", config.Name)
+	if config.Parameters.Classname != "" {
+		t.Errorf("Expected empty name, got %s", config.Parameters.Classname)
 	}
 }
 
